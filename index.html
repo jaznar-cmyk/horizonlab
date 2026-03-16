@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HorizonLab · Propuestas Europeas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0d1117; --surface:#161b22; --surface2:#1c2330;
+  --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.14);
+  --text:#e6edf3; --text2:#8b949e; --text3:#484f58;
+  --accent:#e8a04a; --accent2:#f0c27a;
+  --purple:#9d7ef0; --teal:#3fb68a; --coral:#e07060; --amber:#e8a04a; --red:#e24b4a;
+  --radius:10px;
+  --font-display:'DM Serif Display',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+}
+body { font-family:var(--font-body); background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; font-size:14px; line-height:1.6; }
+
+/* CONFIG BANNER */
+.config-banner { background:#0a0f16; border-bottom:1px solid rgba(157,126,240,0.15); padding:10px 24px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12px; }
+.cfg-group { display:flex; align-items:center; gap:6px; }
+.cfg-label { color:var(--text3); white-space:nowrap; font-size:11px; }
+.cfg-input { background:var(--surface); border:1px solid var(--border2); border-radius:6px; color:var(--text); font-family:var(--font-body); font-size:12px; padding:5px 9px; outline:none; transition:border-color 0.15s; }
+.cfg-input:focus { border-color:rgba(157,126,240,0.5); }
+.cfg-input::placeholder { color:var(--text3); }
+.cfg-input.w180 { width:180px; }
+.cfg-input.w140 { width:140px; }
+.cfg-sep { color:var(--border2); margin:0 2px; }
+.btn-cfg { padding:5px 12px; border-radius:6px; border:none; cursor:pointer; font-family:var(--font-body); font-size:12px; font-weight:500; transition:all 0.15s; white-space:nowrap; }
+.btn-load { background:rgba(157,126,240,0.12); color:var(--purple); border:1px solid rgba(157,126,240,0.2); }
+.btn-load:hover { background:rgba(157,126,240,0.22); }
+.btn-load:disabled { opacity:0.45; cursor:not-allowed; }
+.btn-save { background:rgba(63,182,138,0.1); color:var(--teal); border:1px solid rgba(63,182,138,0.2); }
+.btn-save:hover { background:rgba(63,182,138,0.2); }
+.btn-clear { background:none; color:var(--text3); border:1px solid var(--border); }
+.btn-clear:hover { color:var(--text2); border-color:var(--border2); }
+
+/* CONTEXT STATUS PILLS */
+.ctx-pills { display:flex; align-items:center; gap:6px; margin-left:auto; flex-wrap:wrap; }
+.ctx-pill { display:flex; align-items:center; gap:5px; font-size:10.5px; padding:3px 8px; border-radius:12px; border:1px solid var(--border); white-space:nowrap; }
+.ctx-pill .dp { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+.dp-idle    { background:var(--text3); }
+.dp-loading { background:var(--amber); animation:pulse 1.2s infinite; }
+.dp-ok      { background:var(--teal); }
+.dp-err     { background:var(--red); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* HEADER */
+header { display:flex; align-items:center; justify-content:space-between; padding:0 28px; height:54px; border-bottom:1px solid var(--border); position:sticky; top:0; background:rgba(13,17,23,0.96); backdrop-filter:blur(12px); z-index:50; }
+.logo { display:flex; align-items:baseline; gap:8px; }
+.logo-name { font-family:var(--font-display); font-size:19px; color:var(--text); letter-spacing:-0.3px; }
+.logo-dot { color:var(--accent); }
+.logo-sub { font-size:11px; color:var(--text3); letter-spacing:0.08em; text-transform:uppercase; font-weight:300; }
+.hbadge { font-size:11px; padding:3px 9px; border-radius:20px; border:1px solid var(--border2); color:var(--text2); }
+
+/* LAYOUT */
+.layout { display:flex; flex:1; min-height:0; }
+
+/* SIDEBAR */
+aside { width:210px; flex-shrink:0; border-right:1px solid var(--border); padding:22px 0; position:sticky; top:54px; height:calc(100vh - 54px); overflow-y:auto; }
+.sb-section { padding:0 14px; margin-bottom:22px; }
+.sb-label { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3); font-weight:500; margin-bottom:8px; padding:0 4px; }
+.sb-btn { display:flex; align-items:center; gap:8px; width:100%; padding:7px 10px; border-radius:7px; border:none; background:none; color:var(--text2); font-family:var(--font-body); font-size:13px; cursor:pointer; text-align:left; transition:background 0.15s,color 0.15s; margin-bottom:2px; }
+.sb-btn:hover { background:var(--surface); color:var(--text); }
+.sb-btn.active { background:var(--surface2); color:var(--text); }
+.sdot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.sdot-all { background:var(--text3); }
+.sdot-det { background:var(--purple); }
+.sdot-wri { background:var(--teal); }
+.sdot-con { background:var(--coral); }
+.sdot-tra { background:var(--amber); }
+.scount { margin-left:auto; font-size:11px; color:var(--text3); background:var(--surface); padding:1px 6px; border-radius:10px; }
+
+/* CONTEXT PANEL */
+.ctx-panel { background:rgba(157,126,240,0.03); border:1px solid rgba(157,126,240,0.1); border-radius:8px; padding:10px 12px; margin:14px; }
+.ctx-panel-title { font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text3); font-weight:500; margin-bottom:8px; }
+.ctx-file-row { display:flex; align-items:center; gap:7px; margin-bottom:5px; font-size:11.5px; }
+.ctx-file-row:last-child { margin-bottom:0; }
+.cfd { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+
+/* MAIN */
+main { flex:1; padding:26px 30px; overflow-y:auto; }
+.main-hdr { margin-bottom:26px; }
+.main-title { font-family:var(--font-display); font-size:24px; color:var(--text); font-weight:400; letter-spacing:-0.4px; margin-bottom:5px; }
+.main-sub { color:var(--text2); font-size:13px; font-weight:300; }
+
+/* GRID */
+.tools-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(276px,1fr)); gap:13px; }
+
+/* TOOL CARD */
+.tool-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:19px; cursor:pointer; transition:border-color 0.2s,transform 0.15s,background 0.15s; position:relative; overflow:hidden; }
+.tool-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:10px 10px 0 0; opacity:0; transition:opacity 0.2s; }
+.tool-card:hover { border-color:var(--border2); background:var(--surface2); transform:translateY(-1px); }
+.tool-card:hover::before { opacity:1; }
+.tool-card[data-phase="detection"]::before { background:var(--purple); }
+.tool-card[data-phase="writing"]::before   { background:var(--teal); }
+.tool-card[data-phase="consortium"]::before { background:var(--coral); }
+.tool-card[data-phase="transversal"]::before { background:var(--amber); }
+.ctop { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:11px; }
+.cicon { width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.cicon-det { background:rgba(157,126,240,0.12); }
+.cicon-wri { background:rgba(63,182,138,0.12); }
+.cicon-con { background:rgba(224,112,96,0.12); }
+.cicon-tra { background:rgba(232,160,74,0.12); }
+.cpill { font-size:10px; padding:2px 8px; border-radius:10px; font-weight:500; letter-spacing:0.04em; text-transform:uppercase; }
+.cpill-det { background:rgba(157,126,240,0.12); color:var(--purple); }
+.cpill-wri { background:rgba(63,182,138,0.12);  color:var(--teal); }
+.cpill-con { background:rgba(224,112,96,0.12);  color:var(--coral); }
+.cpill-tra { background:rgba(232,160,74,0.12);  color:var(--amber); }
+.ctitle { font-size:15px; font-weight:500; color:var(--text); margin-bottom:5px; letter-spacing:-0.2px; line-height:1.3; }
+.cdesc  { font-size:12.5px; color:var(--text2); font-weight:300; line-height:1.55; }
+.cfooter { margin-top:14px; }
+.claunch { font-size:11.5px; color:var(--text3); display:flex; align-items:center; gap:4px; transition:color 0.15s; }
+.tool-card:hover .claunch { color:var(--text2); }
+.claunch svg { transition:transform 0.2s; }
+.tool-card:hover .claunch svg { transform:translateX(3px); }
+
+/* DRAWER */
+.drawer-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:100; opacity:0; pointer-events:none; transition:opacity 0.25s; }
+.drawer-overlay.open { opacity:1; pointer-events:all; }
+.drawer { position:fixed; top:0; right:0; bottom:0; width:min(560px,100vw); background:var(--surface); border-left:1px solid var(--border2); z-index:101; display:flex; flex-direction:column; transform:translateX(100%); transition:transform 0.28s cubic-bezier(0.22,1,0.36,1); }
+.drawer.open { transform:translateX(0); }
+.drw-hdr { padding:19px 22px 17px; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; gap:13px; flex-shrink:0; }
+.drw-icon { width:38px; height:38px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.drw-meta { flex:1; min-width:0; }
+.drw-title { font-size:16px; font-weight:500; color:var(--text); margin-bottom:2px; }
+.drw-sub { font-size:12px; color:var(--text2); font-weight:300; }
+.drw-close { background:none; border:none; cursor:pointer; color:var(--text3); padding:4px; border-radius:5px; display:flex; align-items:center; transition:color 0.15s,background 0.15s; }
+.drw-close:hover { color:var(--text); background:var(--surface2); }
+.ctx-bar { padding:7px 22px; border-bottom:1px solid var(--border); font-size:11px; display:flex; align-items:center; gap:6px; flex-shrink:0; }
+.ctx-bar.ok   { background:rgba(63,182,138,0.05); color:var(--teal); }
+.ctx-bar.warn { background:rgba(232,160,74,0.05);  color:var(--amber); }
+.cbar-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+.ctx-bar.ok .cbar-dot   { background:var(--teal); }
+.ctx-bar.warn .cbar-dot { background:var(--amber); }
+
+/* CHAT */
+.chat-msgs { flex:1; overflow-y:auto; padding:18px 22px; display:flex; flex-direction:column; gap:13px; }
+.msg { display:flex; gap:10px; align-items:flex-start; animation:mi 0.2s ease; }
+@keyframes mi { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.mavatar { width:27px; height:27px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:500; margin-top:2px; }
+.msg.user .mavatar { background:var(--surface2); border:1px solid var(--border2); }
+.msg.ai   .mavatar { background:rgba(157,126,240,0.15); border:1px solid rgba(157,126,240,0.2); }
+.mbubble { flex:1; font-size:13px; line-height:1.65; color:var(--text); background:var(--surface2); padding:11px 14px; border-radius:10px; border:1px solid var(--border); }
+.msg.ai .mbubble { background:var(--bg); }
+.mbubble p { margin-bottom:8px; }
+.mbubble p:last-child { margin-bottom:0; }
+.mbubble strong { color:var(--text); font-weight:500; }
+.tdots span { display:inline-block; width:5px; height:5px; background:var(--text3); border-radius:50%; margin:0 2px; animation:bl 1.2s infinite; }
+.tdots span:nth-child(2){animation-delay:.2s} .tdots span:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,80%,100%{opacity:.3}40%{opacity:1}}
+
+/* INPUT */
+.chat-input-area { padding:14px 22px 18px; border-top:1px solid var(--border); flex-shrink:0; }
+.input-row { display:flex; gap:8px; align-items:flex-end; }
+.cinput { flex:1; background:var(--bg); border:1px solid var(--border2); border-radius:8px; padding:10px 13px; color:var(--text); font-family:var(--font-body); font-size:13px; resize:none; min-height:40px; max-height:120px; outline:none; transition:border-color 0.15s; line-height:1.5; }
+.cinput:focus { box-shadow:0 0 0 3px rgba(157,126,240,0.1); }
+.cinput::placeholder { color:var(--text3); }
+.sbtn { width:36px; height:36px; border-radius:8px; background:var(--accent); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s,transform 0.1s; flex-shrink:0; }
+.sbtn:hover { background:var(--accent2); }
+.sbtn:active { transform:scale(0.95); }
+.sbtn:disabled { background:var(--surface2); cursor:not-allowed; opacity:.5; }
+.suggestions { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:11px; }
+.spill { font-size:11.5px; padding:4px 10px; border-radius:20px; border:1px solid var(--border2); background:var(--bg); color:var(--text2); cursor:pointer; font-family:var(--font-body); transition:border-color 0.15s,color 0.15s,background 0.15s; }
+.spill:hover { border-color:var(--accent); color:var(--text); background:rgba(232,160,74,0.05); }
+.empty-chat { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; text-align:center; gap:10px; }
+.empty-chat .bico { font-size:34px; margin-bottom:4px; }
+.empty-chat h3 { font-size:15px; font-weight:500; color:var(--text); }
+.empty-chat p { font-size:12.5px; color:var(--text2); font-weight:300; max-width:300px; line-height:1.6; }
+</style>
+</head>
+<body>
+
+<!-- ── BARRA DE CONFIGURACIÓN ── -->
+<div class="config-banner">
+  <div class="cfg-group">
+    <span class="cfg-label">API Anthropic</span>
+    <input type="password" class="cfg-input w180" id="apiKey" placeholder="sk-ant-api03-…" autocomplete="off">
+  </div>
+  <span class="cfg-sep">|</span>
+  <div class="cfg-group">
+    <span class="cfg-label">GitHub Token</span>
+    <input type="password" class="cfg-input w180" id="ghToken" placeholder="github_pat_…" autocomplete="off">
+  </div>
+  <div class="cfg-group">
+    <span class="cfg-label">Repositorio</span>
+    <input type="text" class="cfg-input w140" id="ghRepo" placeholder="usuario/repo" autocomplete="off">
+  </div>
+  <button class="btn-cfg btn-load" id="loadBtn" onclick="loadAllContext()">Cargar contexto</button>
+  <button class="btn-cfg btn-save" onclick="saveCredentials()">Guardar</button>
+  <button class="btn-cfg btn-clear" onclick="clearCredentials()">Borrar</button>
+  <div class="ctx-pills" id="ctxPills"></div>
+</div>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">
+    <span class="logo-name">Horizon<span class="logo-dot">Lab</span></span>
+    <span class="logo-sub">Plataforma de propuestas · Horizon Europe</span>
+  </div>
+  <span class="hbadge" id="centerBadge">Centro de Investigación</span>
+</header>
+
+<div class="layout">
+  <aside>
+    <div class="sb-section">
+      <div class="sb-label">Herramientas</div>
+      <button class="sb-btn active" onclick="filterTools('all',this)"><span class="sdot sdot-all"></span>Todas<span class="scount">9</span></button>
+      <button class="sb-btn" onclick="filterTools('detection',this)"><span class="sdot sdot-det"></span>Detección<span class="scount">2</span></button>
+      <button class="sb-btn" onclick="filterTools('writing',this)"><span class="sdot sdot-wri"></span>Escritura<span class="scount">4</span></button>
+      <button class="sb-btn" onclick="filterTools('consortium',this)"><span class="sdot sdot-con"></span>Consorcio<span class="scount">2</span></button>
+      <button class="sb-btn" onclick="filterTools('transversal',this)"><span class="sdot sdot-tra"></span>Transversales<span class="scount">1</span></button>
+    </div>
+    <div class="ctx-panel" id="ctxPanel">
+      <div class="ctx-panel-title">Archivos de contexto</div>
+      <div id="ctxFileList"><div style="font-size:11px;color:var(--text3)">Sin cargar</div></div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="main-hdr">
+      <h1 class="main-title">Herramientas IA para propuestas</h1>
+      <p class="main-sub" id="mainSub">Introduce las credenciales y carga el contexto para activar las herramientas con conocimiento institucional</p>
+    </div>
+    <div class="tools-grid" id="toolsGrid"></div>
+  </main>
+</div>
+
+<!-- ── DRAWER ── -->
+<div class="drawer-overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drw-hdr">
+    <div class="drw-icon" id="drwIcon"></div>
+    <div class="drw-meta">
+      <div class="drw-title" id="drwTitle">—</div>
+      <div class="drw-sub" id="drwSub">—</div>
+    </div>
+    <button class="drw-close" onclick="closeDrawer()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="ctx-bar warn" id="ctxBar">
+    <span class="cbar-dot"></span>
+    <span id="ctxBarTxt">Contexto no cargado — respuestas genéricas</span>
+  </div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-input-area">
+    <div class="suggestions" id="suggestions"></div>
+    <div class="input-row">
+      <textarea class="cinput" id="chatInput" placeholder="Escribe tu consulta…" rows="1"
+        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="sbtn" id="sendBtn" onclick="sendMsg()" disabled>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  ARCHIVOS DE CONTEXTO
+//  Añade o quita archivos según necesites.
+//  El orden importa: se cargan y concatenan en orden.
+// ═══════════════════════════════════════════════
+const CONTEXT_FILES = [
+  { id:'perfil',       path:'context/00_perfil_centro.md',       label:'Perfil del centro' },
+  { id:'proyectos',    path:'context/01_proyectos_referencia.md', label:'Proyectos de referencia' },
+  { id:'estadisticas', path:'context/02_estadisticas.md',         label:'Estadísticas y patrones' },
+  { id:'escritura',    path:'context/03_estilo_escritura.md',     label:'Estilo de escritura' },
+  { id:'evaluacion',   path:'context/04_evaluacion_he.md',        label:'Evaluación HE' },
+  { id:'presupuestos', path:'context/05_presupuestos.md',         label:'Presupuestos' },
+  { id:'vocabulario',  path:'context/06_vocabulario_tematico.md', label:'Vocabulario temático' },
+];
+
+// ═══════════════════════════════════════════════
+//  ESTADO
+// ═══════════════════════════════════════════════
+const ctxState = {};   // { id: { status:'idle'|'loading'|'ok'|'err', content:'', label:'' } }
+CONTEXT_FILES.forEach(f => { ctxState[f.id] = { status:'idle', content:'', label:f.label }; });
+
+let currentTool = null;
+let chatHistory = [];
+let isLoading   = false;
+
+// ═══════════════════════════════════════════════
+//  CREDENCIALES (localStorage — solo en tu navegador)
+// ═══════════════════════════════════════════════
+function saveCredentials() {
+  const a = document.getElementById('apiKey').value.trim();
+  const t = document.getElementById('ghToken').value.trim();
+  const r = document.getElementById('ghRepo').value.trim();
+  if (a) localStorage.setItem('hl_api',   a);
+  if (t) localStorage.setItem('hl_token', t);
+  if (r) localStorage.setItem('hl_repo',  r);
+  showToast('Credenciales guardadas en este navegador');
+}
+
+function clearCredentials() {
+  if (!confirm('¿Borrar credenciales guardadas?')) return;
+  ['hl_api','hl_token','hl_repo'].forEach(k => localStorage.removeItem(k));
+  ['apiKey','ghToken','ghRepo'].forEach(id => document.getElementById(id).value = '');
+}
+
+function loadSavedCredentials() {
+  const a = localStorage.getItem('hl_api');
+  const t = localStorage.getItem('hl_token');
+  const r = localStorage.getItem('hl_repo');
+  if (a) document.getElementById('apiKey').value   = a;
+  if (t) document.getElementById('ghToken').value  = t;
+  if (r) document.getElementById('ghRepo').value   = r;
+  if (t && r) loadAllContext();
+}
+
+// ═══════════════════════════════════════════════
+//  CARGA DE CONTEXTO DESDE GITHUB (repo privado)
+// ═══════════════════════════════════════════════
+async function loadAllContext() {
+  const token = document.getElementById('ghToken').value.trim();
+  const repo  = document.getElementById('ghRepo').value.trim();
+  if (!token || !repo) { showToast('Falta token o repositorio', true); return; }
+
+  document.getElementById('loadBtn').disabled = true;
+  CONTEXT_FILES.forEach(f => { ctxState[f.id].status = 'loading'; ctxState[f.id].content = ''; });
+  renderCtxUI();
+
+  await Promise.allSettled(
+    CONTEXT_FILES.map(f => loadSingleFile(f, token, repo))
+  );
+
+  document.getElementById('loadBtn').disabled = false;
+  renderCtxUI();
+
+  const loaded = CONTEXT_FILES.filter(f => ctxState[f.id].status === 'ok').length;
+  const total  = CONTEXT_FILES.length;
+  document.getElementById('mainSub').textContent =
+    loaded > 0
+      ? `${loaded} de ${total} archivos de contexto cargados — herramientas activas`
+      : 'No se pudo cargar el contexto — comprueba el token y el repositorio';
+
+  updateCtxBar();
+  updateCenterBadge();
+}
+
+async function loadSingleFile(fileDef, token, repo) {
+  const url = `https://api.github.com/repos/${repo}/contents/${fileDef.path}?ref=main`;
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github.v3.raw',
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    });
+    if (res.status === 404) { ctxState[fileDef.id].status = 'err'; ctxState[fileDef.id].content = ''; return; }
+    if (!res.ok)            { ctxState[fileDef.id].status = 'err'; return; }
+    ctxState[fileDef.id].content = await res.text();
+    ctxState[fileDef.id].status  = 'ok';
+  } catch(e) {
+    ctxState[fileDef.id].status = 'err';
+  }
+}
+
+function buildFullContext() {
+  return CONTEXT_FILES
+    .filter(f => ctxState[f.id].status === 'ok' && ctxState[f.id].content)
+    .map(f => `## ${ctxState[f.id].label}\n\n${ctxState[f.id].content}`)
+    .join('\n\n---\n\n');
+}
+
+function contextIsLoaded() {
+  return CONTEXT_FILES.some(f => ctxState[f.id].status === 'ok');
+}
+
+// ═══════════════════════════════════════════════
+//  ACTUALIZACIÓN DE UI DE CONTEXTO
+// ═══════════════════════════════════════════════
+function renderCtxUI() {
+  // Pills en la barra superior
+  const pills = document.getElementById('ctxPills');
+  pills.innerHTML = '';
+  CONTEXT_FILES.forEach(f => {
+    const s = ctxState[f.id].status;
+    const pill = document.createElement('div');
+    pill.className = 'ctx-pill';
+    pill.innerHTML = `<span class="dp dp-${s}"></span>${f.label}`;
+    pill.title = f.path;
+    pills.appendChild(pill);
+  });
+
+  // Lista en el panel lateral
+  const list = document.getElementById('ctxFileList');
+  list.innerHTML = '';
+  CONTEXT_FILES.forEach(f => {
+    const s = ctxState[f.id].status;
+    const row = document.createElement('div');
+    row.className = 'ctx-file-row';
+    const icons = { idle:'○', loading:'◌', ok:'●', err:'✕' };
+    const colors = { idle:var_text3, loading:var_amber, ok:var_teal, err:var_red };
+    const kb = s === 'ok' ? ` · ${(ctxState[f.id].content.length/1024).toFixed(0)} KB` : '';
+    row.innerHTML = `<span class="cfd dp-${s}"></span><span style="color:var(--text2)">${f.label}</span><span style="color:var(--text3);margin-left:auto;font-size:10.5px">${s==='ok'?kb:s}</span>`;
+    list.appendChild(row);
+  });
+}
+
+// Workaround para usar variables CSS en JS
+const var_text3 = '#484f58', var_amber = '#e8a04a', var_teal = '#3fb68a', var_red = '#e24b4a';
+
+function updateCtxBar() {
+  const bar = document.getElementById('ctxBar');
+  const txt = document.getElementById('ctxBarTxt');
+  const n = CONTEXT_FILES.filter(f => ctxState[f.id].status === 'ok').length;
+  if (n > 0) {
+    bar.className = 'ctx-bar ok';
+    txt.textContent = `Contexto institucional activo · ${n}/${CONTEXT_FILES.length} archivos`;
+  } else {
+    bar.className = 'ctx-bar warn';
+    txt.textContent = 'Contexto no cargado — respuestas genéricas';
+  }
+}
+
+function updateCenterBadge() {
+  // Intenta extraer el nombre del centro del perfil si existe
+  const perfil = ctxState['perfil']?.content || '';
+  const match = perfil.match(/^#\s+(.+)/m);
+  if (match) {
+    const name = match[1].replace(/—.*/, '').trim().substring(0, 40);
+    document.getElementById('centerBadge').textContent = name;
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  HERRAMIENTAS
+// ═══════════════════════════════════════════════
+const TOOLS = [
+  { id:'radar', phase:'detection', icon:'🔭', title:'Radar de convocatorias',
+    desc:'Analiza topics de Horizon Europe y evalúa su alineación con el perfil del centro.',
+    suggestions:['Analiza este topic para nuestro centro','¿Qué topics del WP 2026 encajan con nuestro perfil?','Prioriza estas convocatorias según nuestra experiencia'],
+    role:`Eres el Radar de Convocatorias especializado en Horizon Europe. Analizas topics y evalúas su alineación con las capacidades del centro de investigación, usando el contexto institucional completo adjunto.
+
+Para cada topic:
+1. Requisitos clave: expertise, TRL, tipo de consorcio, expected outcomes
+2. Encaje con grupos y capacidades específicas del centro
+3. Gaps que requieren socios externos y perfil de partner necesario
+4. Puntuación de alineación 1-5 con justificación concreta
+5. Rol recomendado (coordinador o partner) y si merece la inversión de tiempo
+
+Sé directo, específico y basado en el contexto del centro. Nunca genérico.` },
+
+  { id:'competencias', phase:'detection', icon:'🧩', title:'Alineador de competencias',
+    desc:'Cruza los requisitos de un topic con las capacidades internas del centro.',
+    suggestions:['¿Qué capacidades aplican a este topic?','Genera la tabla de competencias vs requisitos','¿Qué socios necesitamos para completar el consorcio?'],
+    role:`Eres el Alineador de Competencias para propuestas Horizon Europe. Cruzas sistemáticamente las capacidades del centro con los requisitos de cada topic.
+
+Para cada análisis:
+1. Requisitos de expertise del topic (tecnologías, sectores, TRL)
+2. Mapeo de grupos y equipos del centro que cubren cada requisito
+3. Gaps con perfil ideal de partner externo para cada uno
+4. Tabla de cobertura: ✅ cubierto / ⚠️ parcial / ❌ requiere partner
+5. Verificación de mínimos HE del consorcio
+
+Basa el análisis en el contexto institucional disponible.` },
+
+  { id:'arquitecto', phase:'writing', icon:'🏗️', title:'Arquitecto de propuesta',
+    desc:'Genera estructura de Work Packages, tareas y entregables siguiendo el estilo habitual del centro.',
+    suggestions:['Genera los WPs para un proyecto sobre redes inteligentes','Estructura esta idea como IA de 48 meses','¿Cómo organizar los pilares para bioeconomía circular?'],
+    role:`Eres el Arquitecto de Propuestas para Horizon Europe. Diseñas estructuras lógicas de propuestas siguiendo los patrones habituales del centro descritos en el contexto.
+
+Para cada propuesta:
+1. Pilares temáticos numerados con Innovaciones (INN1, INN2…) en formato SoA + Progreso
+2. WPs coherentes: gestión, técnicos por pilar/demo, LCA, replicación, comunicación, explotación
+3. Secuencia de 6 fases metodológicas (P1-P6) con WPs y rangos de meses
+4. KERs preliminares con propietario sugerido
+5. Riesgos estructurales identificados
+
+Pregunta siempre: duración, tipo de acción, número de partners y rol del centro.` },
+
+  { id:'coescritor', phase:'writing', icon:'✍️', title:'Co-escritor contextual',
+    desc:'Redacta secciones de propuesta con el estilo, tono y vocabulario real del centro.',
+    suggestions:['Redacta el Executive Summary para este proyecto','Escribe el Impact respondiendo a los Expected Outcomes','Mejora este párrafo de metodología'],
+    role:`Eres el Co-escritor de Propuestas Europeas. Redactas secciones con el estilo, rigor y vocabulario del centro descrito en el contexto institucional.
+
+Tu escritura:
+1. Voz activa y asertiva, afirmaciones cuantificadas
+2. Patrones de frase habituales del centro (del contexto de estilo)
+3. Vocabulario técnico correcto según área temática
+4. Executive Summary: Problem / Solution / Team / Impact
+5. Innovaciones en formato ■ SoA + ►Progress during the project
+6. Impacto: responder cada EO con métricas específicas
+7. Secciones boilerplate correctas (género, open science, DNSH)
+
+Pregunta: tema, tipo de acción, Expected Outcomes, borradores existentes.` },
+
+  { id:'evaluador', phase:'writing', icon:'🎯', title:'Evaluador simulado',
+    desc:'Critica la propuesta con los criterios reales de la CE. Detecta debilidades y simula puntuaciones.',
+    suggestions:['Evalúa esta sección de Excellence','¿Qué puntuación daría un evaluador a este Impact?','Identifica los puntos débiles críticos'],
+    role:`Eres un evaluador experto de propuestas Horizon Europe con más de 10 años como revisor de la CE.
+
+Para cada texto:
+1. Criterios HE: Excellence (0-5), Impact (0-5), Implementation (0-5)
+2. Puntuación simulada + fortalezas + debilidades con referencia al párrafo específico
+3. Red flags: afirmaciones sin respaldo, KERs sin propietario, pathway to market vago, género ausente
+4. Cobertura EO por EO del topic
+5. Secciones obligatorias: DNSH, open science, DMP, PGEP
+6. Threshold mínimo por criterio (3.5/5)
+7. Mejoras específicas y accionables
+
+Usa el archivo de evaluación del contexto para aplicar los patrones conocidos del centro.` },
+
+  { id:'compliance', phase:'writing', icon:'✅', title:'Verificador de cumplimiento',
+    desc:'Comprueba requisitos del Work Programme: secciones obligatorias, género, open science, DNSH.',
+    suggestions:['Verifica los requisitos obligatorios de HE','¿Qué secciones nos faltan?','Comprueba cumplimiento de open science y DMP'],
+    role:`Eres el Verificador de Cumplimiento de propuestas HE. Generas una checklist exhaustiva ✅ / ⚠️ / ❌.
+
+Revisas:
+1. Secciones obligatorias según tipo de acción
+2. Subsecciones: objetivos SMART, SoA por innovación, fases metodológicas, KPIs, tabla de sinergias
+3. Dimensión de género: PGEP + análisis en contenido de investigación
+4. Open Science: 4 puntos cubiertos
+5. Principio DNSH: párrafo estándar correcto
+6. DMP: entregable M6, principios FAIR
+7. Ethics Self-Assessment si aplica
+8. Cada EO del topic respondido en Impact con métricas
+9. Límites de extensión y formato
+10. Coherencia Part A / Part B
+
+Si hay incumplimientos, indica el texto correcto para resolverlos.` },
+
+  { id:'socios', phase:'consortium', icon:'🤝', title:'Explorador de socios',
+    desc:'Identifica perfiles de socios complementarios y ayuda a justificar la complementariedad del consorcio.',
+    suggestions:['¿Qué perfil de socio industrial necesitamos?','Cómo justificar la complementariedad en la propuesta','Define criterios para seleccionar al coordinador'],
+    role:`Eres el Explorador de Socios para propuestas HE. Identificas, caracterizas y justificas la selección de partners.
+
+Tu trabajo:
+1. Análisis de gaps de competencias del consorcio
+2. Perfil ideal de cada partner faltante: sector, país, capacidades, TRL, tipo
+3. Estrategias de búsqueda: CORDIS, redes sectoriales específicas del área
+4. Redacción de justificación de complementariedad con lenguaje HE estándar
+5. Verificación de mínimos HE: países, tipos de entidad, equilibrio academia-industria
+6. Pitch para convencer a potenciales socios
+
+Pregunta siempre: tipo de acción, partners actuales, países cubiertos, gaps por completar.` },
+
+  { id:'negociacion', phase:'consortium', icon:'📋', title:'Asistente de negociación',
+    desc:'Prepara documentos para la negociación del consorcio: cartas, distribución de roles y presupuesto.',
+    suggestions:['Redacta una carta de invitación para un socio industrial','Distribuye el presupuesto entre 10 partners','Argumentos para que un socio acepte liderar un WP'],
+    role:`Eres el Asistente de Negociación de Consorcios para propuestas HE.
+
+Redactas y asesoras sobre:
+1. Cartas de invitación adaptadas al tipo de organización
+2. Distribución de roles y liderazgo de WPs equilibrada
+3. Distribución presupuestaria justificada (usa el archivo de presupuestos del contexto)
+4. Argumentarios para convencer a socios de participar o asumir roles
+5. Elementos clave del Consortium Agreement
+6. Gestión de expectativas y conflictos
+
+Adapta el tono: formal para instituciones públicas, orientado a negocio para empresas.` },
+
+  { id:'memoria', phase:'transversal', icon:'🧠', title:'Memoria institucional',
+    desc:'Consulta el conocimiento acumulado del centro: cómo habéis descrito conceptos, qué ha funcionado, lecciones aprendidas.',
+    suggestions:['¿Cómo describimos nuestra metodología en propuestas de edificios?','¿Qué vocabulario usamos en Impact de bioeconomía?','Resume lo aprendido de proyectos de descarbonización industrial'],
+    role:`Eres la Memoria Institucional del centro de investigación. Recuperas y articulás el conocimiento acumulado en el contexto institucional completo adjunto.
+
+Tu función:
+1. Recuperar cómo el centro ha descrito capacidades, metodologías y experiencia en propuestas anteriores
+2. Identificar estilo, vocabulario y frases habituales según cluster temático
+3. Extraer lecciones aprendidas de proyectos de referencia
+4. Reutilizar y adaptar argumentos de propuestas anteriores
+5. Responder preguntas sobre cómo el centro ha abordado temas específicos
+
+Basa todo en el contexto disponible. Si hay nueva información, extrae y estructura los aprendizajes.` }
+];
+
+const phaseLabels = { detection:'Detección', writing:'Escritura', consortium:'Consorcio', transversal:'Transversal' };
+const phaseIconClass = { detection:'cicon-det', writing:'cicon-wri', consortium:'cicon-con', transversal:'cicon-tra' };
+const phasePillClass = { detection:'cpill-det', writing:'cpill-wri', consortium:'cpill-con', transversal:'cpill-tra' };
+
+// ═══════════════════════════════════════════════
+//  RENDER DE TARJETAS
+// ═══════════════════════════════════════════════
+function renderTools(filter='all') {
+  const grid = document.getElementById('toolsGrid');
+  grid.innerHTML = '';
+  const list = filter === 'all' ? TOOLS : TOOLS.filter(t => t.phase === filter);
+  list.forEach(tool => {
+    const card = document.createElement('div');
+    card.className = 'tool-card';
+    card.setAttribute('data-phase', tool.phase);
+    card.onclick = () => openTool(tool);
+    card.innerHTML = `
+      <div class="ctop">
+        <div class="cicon ${phaseIconClass[tool.phase]}">${tool.icon}</div>
+        <span class="cpill ${phasePillClass[tool.phase]}">${phaseLabels[tool.phase]}</span>
+      </div>
+      <div class="ctitle">${tool.title}</div>
+      <div class="cdesc">${tool.desc}</div>
+      <div class="cfooter">
+        <span class="claunch">Abrir herramienta
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function filterTools(phase, btn) {
+  document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTools(phase);
+}
+
+// ═══════════════════════════════════════════════
+//  DRAWER + CHAT
+// ═══════════════════════════════════════════════
+function openTool(tool) {
+  currentTool = tool;
+  chatHistory = [];
+  document.getElementById('drwIcon').textContent = tool.icon;
+  document.getElementById('drwIcon').className = `drw-icon ${phaseIconClass[tool.phase]}`;
+  document.getElementById('drwTitle').textContent = tool.title;
+  document.getElementById('drwSub').textContent = phaseLabels[tool.phase] + ' · Horizon Europe';
+  updateCtxBar();
+
+  document.getElementById('chatMsgs').innerHTML =
+    `<div class="empty-chat"><div class="bico">${tool.icon}</div><h3>${tool.title}</h3><p>${tool.desc}</p></div>`;
+
+  const sug = document.getElementById('suggestions');
+  sug.innerHTML = '';
+  tool.suggestions.forEach(s => {
+    const p = document.createElement('button');
+    p.className = 'spill'; p.textContent = s;
+    p.onclick = () => { document.getElementById('chatInput').value = s; autoResize(document.getElementById('chatInput')); updateSendBtn(); sendMsg(); };
+    sug.appendChild(p);
+  });
+
+  document.getElementById('chatInput').value = '';
+  updateSendBtn();
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+  setTimeout(() => document.getElementById('chatInput').focus(), 300);
+}
+
+function closeDrawer() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+function handleKey(e) { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } }
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  updateSendBtn();
+}
+
+function updateSendBtn() {
+  document.getElementById('sendBtn').disabled = !document.getElementById('chatInput').value.trim() || isLoading;
+}
+
+function addMessage(role, content) {
+  document.querySelector('.empty-chat')?.remove();
+  document.getElementById('suggestions').innerHTML = '';
+  const msgs = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `<div class="mavatar">${role==='user'?'U':'✦'}</div><div class="mbubble">${fmt(content)}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div.querySelector('.mbubble');
+}
+
+function fmt(t) {
+  return '<p>' + t
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/\n/g,'<br>') + '</p>';
+}
+
+// ═══════════════════════════════════════════════
+//  LLAMADA A LA API DE CLAUDE
+// ═══════════════════════════════════════════════
+async function sendMsg() {
+  if (isLoading || !currentTool) return;
+  const input = document.getElementById('chatInput');
+  const text  = input.value.trim();
+  if (!text) return;
+
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) { addMessage('ai','Introduce tu API key de Anthropic en la barra superior.'); return; }
+
+  input.value = ''; input.style.height = 'auto';
+  isLoading = true; updateSendBtn();
+  addMessage('user', text);
+  chatHistory.push({ role:'user', content:text });
+  const bubble = addMessage('ai','<span class="tdots"><span></span><span></span><span></span></span>');
+
+  const fullCtx = buildFullContext();
+  const ctxBlock = fullCtx
+    ? `\n\n---\n# CONTEXTO INSTITUCIONAL\n\nEl siguiente documento contiene información real y detallada sobre el centro de investigación. Úsalo como base para todas tus respuestas.\n\n${fullCtx}\n---`
+    : '\n\n[Contexto institucional no disponible. Responde de forma genérica para un centro de investigación europeo en energía.]';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2000,
+        system: currentTool.role + ctxBlock,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || (data.error ? `Error: ${data.error.message}` : 'Error al obtener respuesta.');
+    bubble.innerHTML = fmt(reply);
+    chatHistory.push({ role:'assistant', content:reply });
+  } catch(e) {
+    bubble.innerHTML = fmt('Error de conexión. Verifica la API key e inténtalo de nuevo.');
+  }
+
+  isLoading = false; updateSendBtn();
+  document.getElementById('chatMsgs').scrollTop = 99999;
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST UTIL
+// ═══════════════════════════════════════════════
+function showToast(msg, err=false) {
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;padding:10px 16px;border-radius:8px;font-size:13px;z-index:9999;font-family:var(--font-body);transition:opacity .3s;background:${err?'#3d1a1a':'#162b20'};color:${err?'var(--red)':'var(--teal)'};border:1px solid ${err?'rgba(226,75,74,0.3)':'rgba(63,182,138,0.3)'};`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
+}
+
+// ═══════════════════════════════════════════════
+//  INICIO
+// ═══════════════════════════════════════════════
+document.getElementById('chatInput').addEventListener('input', updateSendBtn);
+renderTools('all');
+renderCtxUI();
+loadSavedCredentials();
+</script>
+</body>
+</html>
